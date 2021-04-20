@@ -1,28 +1,20 @@
-import snoowrap from "snoowrap";
-
-function getSnoo() {
-  return new snoowrap({
-    userAgent: process.env.REDDIT_USER_AGENT,
-    clientId: process.env.REDDIT_CLIENT_ID,
-    clientSecret: process.env.REDDIT_CLIENT_SECRET,
-    refreshToken: process.env.REDDIT_REFRESH_TOKEN,
-  });
-}
-
-async function getRandomHotPosts(limit = 1) {
-  const r = getSnoo();
-  const posts = await r.getSubreddit("random").getHot({ limit });
-  const result = posts
-    .filter((post) => !post.stickied)
-    .map((post) => ({
-      title: post.title,
-      subreddit: post.subreddit.display_name,
-      url: post.url,
-      id: `t3_${post.id}`,
-    }));
-  return result;
-}
+import { getPosts } from "../../lib/reddit";
+import redis from "../../lib/redis";
+import { v4 as uuidv4 } from "uuid";
 
 export default async (req, res) => {
-  res.status(200).json(await getRandomHotPosts());
+  const id = uuidv4();
+
+  const posts = await getPosts({ subreddit: "random" });
+
+  if (!posts) {
+    res.status(500).send("Unable to load random posts");
+    return;
+  }
+
+  // get the subreddit name and save
+  const subreddit = posts[0].subreddit;
+  redis.set(id, subreddit);
+
+  res.status(200).json({ id, posts });
 };
