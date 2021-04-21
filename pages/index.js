@@ -1,7 +1,8 @@
 import { useState } from "react";
 import Head from "next/head";
-import Post from "../components/Post";
-import data from "../lib/data";
+import Posts from "../components/Posts";
+import Header from "../components/Header";
+import dummy from "../lib/dummy";
 import { startGame, sendGuess } from "../lib/api";
 
 export default function Home() {
@@ -12,17 +13,21 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
 
   const startNewGame = async () => {
-    setFeedback("");
-    try {
-      const { data } = await startGame();
-      console.log(data);
-      setGameId(data.id);
-      setPosts(data.posts);
-      setPostCount(5);
-    } catch (err) {
-      console.log(err.response);
-      setFeedback(err.response.data.message);
-    }
+    // setFeedback("");
+    // try {
+    //   const { data } = await startGame();
+    //   console.log(data);
+    //   setGameId(data.id);
+    //   setPosts(data.posts);
+    //   setPostCount(5);
+    // } catch (err) {
+    //   console.log(err.response);
+    //   setFeedback(err.response.data.message);
+    // }
+
+    //Dummy
+    setPosts(dummy.posts);
+    setPostCount(5);
   };
 
   const showMorePosts = () => {
@@ -50,44 +55,49 @@ export default function Home() {
     }
   };
 
-  let postCards = [];
-  for (let i = 0; i < postCount; i++) {
-    postCards.push(<Post data={posts[i]} key={i} />);
-  }
-
   return (
-    <div className="container mx-auto">
-      <Head>
-        <title>Reddit Guesser</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div className="pt-12">
+      <div className="container mx-auto">
+        <Head>
+          <title>Reddit Guesser</title>
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <Header />
 
-      <button
-        className="mx-auto bg-green-400 text-white px-2 py-4 rounded"
-        onClick={startNewGame}
-      >
-        New Game
-      </button>
+        <div className="flex justify-center mb-4 gap-4">
+          <button
+            className="bg-green-400 text-white p-3 rounded"
+            onClick={startNewGame}
+          >
+            New Game
+          </button>
 
-      <input
-        type="text"
-        name="guess"
-        id="guess"
-        placeholder="Enter your guess here"
-        onChange={(e) => setGuess(e.target.value)}
-      />
-      <input type="submit" value="Submit" onClick={handleSubmit} />
-      <div className="feedback">{feedback}</div>
+          <div className="">
+            <input
+              type="text"
+              name="guess"
+              id="guess"
+              placeholder="Enter your guess here"
+              onChange={(e) => setGuess(e.target.value)}
+              className="p-3 border-2 outline-none border-r-0 rounded-l border-gray-400 focus:border-gray-400"
+            />
+            <input
+              type="submit"
+              value="Submit"
+              onClick={handleSubmit}
+              className="p-3 bg-blue-500 rounded-r text-white border-2 border-gray-400  border-l-0"
+            />
+          </div>
+        </div>
 
-      <div className="md:grid md:grid-cols-5 md:gap-2 posts">{postCards}</div>
-      {postCount > 0 && postCount < 25 && (
-        <button
-          className="mx-auto bg-gray-400 text-black px-2 py-4 rounded"
-          onClick={showMorePosts}
-        >
-          Show more posts
-        </button>
-      )}
+        <div className="text-center mb-4">{feedback}</div>
+
+        <Posts
+          posts={posts}
+          postCount={postCount}
+          showMorePosts={showMorePosts}
+        />
+      </div>
     </div>
   );
 }
