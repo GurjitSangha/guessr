@@ -1,65 +1,93 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import { useState } from "react";
+import Head from "next/head";
+import Post from "../components/Post";
+import data from "../lib/data";
+import { startGame, sendGuess } from "../lib/api";
 
 export default function Home() {
+  const [posts, setPosts] = useState([]);
+  const [postCount, setPostCount] = useState(0);
+  const [guess, setGuess] = useState("");
+  const [gameId, setGameId] = useState("");
+  const [feedback, setFeedback] = useState("");
+
+  const startNewGame = async () => {
+    setFeedback("");
+    try {
+      const { data } = await startGame();
+      console.log(data);
+      setGameId(data.id);
+      setPosts(data.posts);
+      setPostCount(5);
+    } catch (err) {
+      console.log(err.response);
+      setFeedback(err.response.data.message);
+    }
+  };
+
+  const showMorePosts = () => {
+    if (postCount <= 20) {
+      setPostCount(postCount + 5);
+    }
+  };
+
+  const handleSubmit = async () => {
+    setFeedback("");
+    try {
+      const { data } = await sendGuess({
+        id: gameId,
+        guess: guess.toLowerCase(),
+      });
+      console.log(data);
+      if (data.correct) {
+        setFeedback("Correct!");
+      } else {
+        setFeedback("Incorrect, try again");
+      }
+    } catch (err) {
+      console.log(err.response);
+      setFeedback(err.response.data.message);
+    }
+  };
+
+  let postCards = [];
+  for (let i = 0; i < postCount; i++) {
+    postCards.push(<Post data={posts[i]} key={i} />);
+  }
+
   return (
-    <div className={styles.container}>
+    <div className="container mx-auto">
       <Head>
-        <title>Create Next App</title>
+        <title>Reddit Guesser</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <button
+        className="mx-auto bg-green-400 text-white px-2 py-4 rounded"
+        onClick={startNewGame}
+      >
+        New Game
+      </button>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
+      <input
+        type="text"
+        name="guess"
+        id="guess"
+        placeholder="Enter your guess here"
+        onChange={(e) => setGuess(e.target.value)}
+      />
+      <input type="submit" value="Submit" onClick={handleSubmit} />
+      <div className="feedback">{feedback}</div>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+      <div className="md:grid md:grid-cols-5 md:gap-2 posts">{postCards}</div>
+      {postCount > 0 && postCount < 25 && (
+        <button
+          className="mx-auto bg-gray-400 text-black px-2 py-4 rounded"
+          onClick={showMorePosts}
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+          Show more posts
+        </button>
+      )}
     </div>
-  )
+  );
 }
