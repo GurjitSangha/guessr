@@ -3,6 +3,7 @@ import Head from "next/head";
 import Posts from "../components/Posts";
 import Header from "../components/Header";
 import Spinner from "../components/Spinner";
+import Footer from "../components/Footer";
 import dummy from "../lib/dummy";
 import { startGame, sendGuess } from "../lib/api";
 
@@ -75,7 +76,7 @@ export default function Home() {
   };
 
   return (
-    <div className="pt-12">
+    <div className="pt-12 min-h-screen">
       <div className="container mx-auto">
         <Head>
           <title>GuessReddit</title>
@@ -127,6 +128,8 @@ export default function Home() {
             showMorePosts={showMorePosts}
           />
         )}
+
+        <Footer />
       </div>
     </div>
   );
