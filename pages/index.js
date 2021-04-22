@@ -13,26 +13,26 @@ export default function Home() {
   const [feedback, setFeedback] = useState("");
 
   const startNewGame = async () => {
-    // setFeedback("");
-    // try {
-    //   const { data } = await startGame();
-    //   console.log(data);
-    //   setGameId(data.id);
-    //   setPosts(data.posts);
-    //   setPostCount(5);
-    // } catch (err) {
-    //   console.log(err.response);
-    //   setFeedback(err.response.data.message);
-    // }
+    setFeedback("");
+    try {
+      const { data } = await startGame();
+      console.log(data);
+      setGameId(data.id);
+      setPosts(data.posts);
+      setPostCount(4);
+    } catch (err) {
+      console.log(err.response);
+      setFeedback(err.response.data.message);
+    }
 
     //Dummy
-    setPosts(dummy.posts);
-    setPostCount(5);
+    // setPosts(dummy.posts);
+    // setPostCount(4);
   };
 
   const showMorePosts = () => {
     if (postCount <= 20) {
-      setPostCount(postCount + 5);
+      setPostCount(postCount + 4);
     }
   };
 

@@ -7,7 +7,7 @@ export default async (req, res) => {
 
   const { posts, subreddit } = await getPosts({
     subreddit: "random",
-    limit: 25,
+    limit: 24,
   });
 
   if (!posts) {
