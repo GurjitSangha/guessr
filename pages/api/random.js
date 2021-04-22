@@ -11,12 +11,21 @@ export default async (req, res) => {
   });
 
   if (!posts) {
-    res.status(500).send("Unable to load random posts");
+    res
+      .status(500)
+      .json({ message: "Unable to load posts, please try again later" });
     return;
   }
 
-  connectRedis().set(id, subreddit.toLowerCase());
-  disconnectRedis();
+  try {
+    connectRedis().set(id, subreddit.toLowerCase());
+    disconnectRedis();
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ message: "Unable to load posts, please try again later" });
+  }
 
   res.status(200).json({ id, subreddit, posts });
 };
