@@ -1,6 +1,6 @@
 export default function Header() {
   return (
-    <div className="py-18 px-6 text-center text-gray-700">
+    <div className="py-18 px-6 text-center text-gray-700 dark:text-gray-300">
       <h1 className="text-4xl font-bold leading-snug mb-4">
         <span className="bg-clip-text bg-gradient-to-r text-transparent from-blue-500 to-red-500">
           GuessReddit

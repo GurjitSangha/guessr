@@ -52,7 +52,11 @@ export default function Home() {
   const displayFeedback = ({ data, error = false, giveUp = false }) => {
     if (error) {
       setFeedbackStyle("bg-red-400 text-white border-red-500");
-      setFeedback(data.message);
+      setFeedback(
+        data.message
+          ? data.message
+          : "Something went wrong, please try again later"
+      );
       return;
     }
 
@@ -114,7 +118,7 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row justify-center mb-4 gap-4">
           <button
-            className="bg-green-400 text-white p-3 rounded"
+            className="bg-green-400 dark:bg-transparent border border-green-500 text-white p-3 rounded"
             onClick={startNewGame}
           >
             New Game
@@ -127,7 +131,7 @@ export default function Home() {
               id="guess"
               placeholder="Enter your guess here"
               onChange={(e) => setGuess(e.target.value)}
-              className="p-3 flex-grow border-2 outline-none border-r-0 rounded-l border-gray-400 focus:border-gray-400"
+              className="p-3 dark:bg-transparent flex-grow border-2 outline-none border-r-0 rounded-l border-gray-400 focus:border-gray-400"
             />
             <input
               type="submit"
@@ -142,7 +146,7 @@ export default function Home() {
             value="Reveal Answer"
             onClick={handleGiveUp}
             disabled={isSubmitting || !gameId}
-            className="p-3 bg-red-500 disabled:opacity-50 rounded text-white"
+            className="p-3 bg-red-500 dark:bg-transparent border border-red-500 disabled:opacity-50 rounded text-white"
           />
         </div>
 

@@ -12,7 +12,7 @@ export default function Posts({ posts, postCount, showMorePosts }) {
       {postCount > 0 && postCount < 24 && (
         <div className="flex justify-items-center">
           <button
-            className="mx-auto bg-gray-400 text-white px-2 py-4 rounded mb-8"
+            className="mx-auto border border-gray-400 bg-gray-400 dark:bg-transparent text-white px-2 py-4 rounded mb-8"
             onClick={showMorePosts}
           >
             Show More Posts

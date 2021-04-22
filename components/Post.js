@@ -10,7 +10,7 @@ export default function Post({ post }) {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row bg-white border-2 border-gray-300 p-4 rounded shadow-lg">
+    <div className="flex flex-col lg:flex-row bg-white dark:bg-transparent border-2 border-gray-300 p-4 rounded shadow-lg">
       {post.thumbnail && (
         <div
           className="self-center rounded-md flex-shrink-0"
@@ -19,7 +19,7 @@ export default function Post({ post }) {
           <Image src={post.thumbnail} width="100" height="100" />
         </div>
       )}
-      <div className="ml-4 text-l font-medium text-black self-center">
+      <div className="ml-4 text-l font-medium text-black dark:text-white self-center">
         {post.title}
       </div>
       <PostModal

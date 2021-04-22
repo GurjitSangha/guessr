@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <div className="fixed left-0 bottom-0 w-full align-middle bg-white">
+    <div className="fixed left-0 bottom-0 w-full align-middle bg-transparent dark:text-gray-300">
       <div className="flex text-sm justify-center gap-5 bottom-0">
         <span>
           <a
