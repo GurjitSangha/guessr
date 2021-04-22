@@ -5,7 +5,7 @@ import Header from "../components/Header";
 import Spinner from "../components/Spinner";
 import Footer from "../components/Footer";
 import dummy from "../lib/dummy";
-import { startGame, sendGuess } from "../lib/api";
+import { startGame, sendGuess, sendGiveUp } from "../lib/api";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -17,20 +17,23 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const startNewGame = async () => {
+  const resetFeedback = () => {
     setFeedback("");
+    setFeedbackStyle("");
+  };
+
+  const startNewGame = async () => {
+    resetFeedback();
     setPostCount(0);
     setIsLoading(true);
     try {
       const { data } = await startGame();
       setIsLoading(false);
-      console.log(data);
       setGameId(data.id);
       setPosts(data.posts);
       setPostCount(4);
     } catch (err) {
       setIsLoading(false);
-      console.log(err.response);
       displayFeedback({ data: err.response.data, error: true });
     }
 
@@ -46,10 +49,16 @@ export default function Home() {
     }
   };
 
-  const displayFeedback = ({ data, error = false }) => {
+  const displayFeedback = ({ data, error = false, giveUp = false }) => {
     if (error) {
       setFeedbackStyle("bg-red-400 text-white border-red-500");
       setFeedback(data.message);
+      return;
+    }
+
+    if (giveUp) {
+      setFeedbackStyle("bg-blue-400 text-white border-blue-500");
+      setFeedback(`Unlucky! The correct subreddit was /r/${data.subreddit}`);
       return;
     }
 
@@ -66,8 +75,7 @@ export default function Home() {
   };
 
   const handleSubmit = async () => {
-    setFeedback("");
-    setFeedbackStyle("");
+    resetFeedback();
     setIsSubmitting(true);
     try {
       const { data } = await sendGuess({
@@ -75,11 +83,22 @@ export default function Home() {
         guess: guess.toLowerCase(),
       });
       setIsSubmitting(false);
-      console.log(data);
       displayFeedback({ data });
     } catch (err) {
       setIsSubmitting(false);
-      console.log(err.response);
+      displayFeedback({ data: err.response.data, error: true });
+    }
+  };
+
+  const handleGiveUp = async () => {
+    resetFeedback();
+    setIsSubmitting(true);
+    try {
+      const { data } = await sendGiveUp({ id: gameId });
+      setIsSubmitting(false);
+      displayFeedback({ data, giveUp: true });
+    } catch (err) {
+      setIsSubmitting(false);
       displayFeedback({ data: err.response.data, error: true });
     }
   };
@@ -115,9 +134,16 @@ export default function Home() {
               value="Submit"
               onClick={handleSubmit}
               disabled={isSubmitting || !gameId || !guess}
-              className="p-3 bg-blue-500 disabled:opacity-50 rounded-r text-white border-2 border-gray-400  border-l-0"
+              className="p-3 bg-blue-500 disabled:opacity-50 rounded-r text-white border-2 border-gray-400 border-l-0"
             />
           </div>
+          <input
+            type="submit"
+            value="Reveal Answer"
+            onClick={handleGiveUp}
+            disabled={isSubmitting || !gameId}
+            className="p-3 bg-red-500 disabled:opacity-50 rounded text-white"
+          />
         </div>
 
         <div
