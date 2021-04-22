@@ -1,23 +1,23 @@
 import { connectRedis, disconnectRedis } from "../../lib/redis";
+import stringSimilarity from "string-similarity";
 
 export default async (req, res) => {
   const { id, guess } = req.body;
-
-  if (!id || !guess) {
-    res.status(400).json({ message: "Missing ID" });
-    return;
-  }
 
   const subreddit = await connectRedis().get(id);
   disconnectRedis();
 
   if (!subreddit) {
-    res.status(404).json({ message: "Unable to find game ID" });
+    res.status(404).json({
+      message: "Game not found, please try starting a new game",
+    });
     return;
   }
 
-  let correct = false;
-  if (subreddit == guess) correct = true;
-
-  res.status(200).json({ id, guess, correct });
+  res.status(200).json({
+    id,
+    guess,
+    correct: subreddit == guess,
+    similarity: stringSimilarity.compareTwoStrings(subreddit, guess),
+  });
 };

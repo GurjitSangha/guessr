@@ -31,7 +31,7 @@ export default function Home() {
     } catch (err) {
       setIsLoading(false);
       console.log(err.response);
-      setFeedback(err.response.data.message);
+      displayFeedback({ data: err.response.data, error: true });
     }
 
     //Dummy
@@ -46,13 +46,22 @@ export default function Home() {
     }
   };
 
-  const displayFeedback = (correct) => {
-    if (correct) {
+  const displayFeedback = ({ data, error = false }) => {
+    if (error) {
+      setFeedbackStyle("bg-red-400 text-white border-red-500");
+      setFeedback(data.message);
+      return;
+    }
+
+    if (data.correct) {
       setFeedback("Correct!");
       setFeedbackStyle("bg-green-400 text-white border-green-500");
+    } else if (data.similarity > 0.8) {
+      setFeedbackStyle("bg-yellow-400 text-white border-yellow-500");
+      setFeedback("Incorrect, but you are close!");
     } else {
-      setFeedback("Incorrect, please try again");
       setFeedbackStyle("bg-red-400 text-white border-red-500");
+      setFeedback("Incorrect, please try again");
     }
   };
 
@@ -67,11 +76,11 @@ export default function Home() {
       });
       setIsSubmitting(false);
       console.log(data);
-      displayFeedback(data.correct);
+      displayFeedback({ data });
     } catch (err) {
       setIsSubmitting(false);
       console.log(err.response);
-      setFeedback(err.response.data.message);
+      displayFeedback({ data: err.response.data, error: true });
     }
   };
 
@@ -105,7 +114,7 @@ export default function Home() {
               type="submit"
               value="Submit"
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !gameId || !guess}
               className="p-3 bg-blue-500 disabled:opacity-50 rounded-r text-white border-2 border-gray-400  border-l-0"
             />
           </div>
