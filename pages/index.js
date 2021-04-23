@@ -36,7 +36,7 @@ export default function Home() {
       setGameId(data.id);
       setPosts(data.posts);
       setPostCount(4);
-      setHintText("The correct subreddit name has ${data.subLength} letters");
+      setHintText(`The correct subreddit name has ${data.subLength} letters`);
     } catch (err) {
       setIsLoading(false);
       displayFeedback({ data: err.response.data, error: true });
