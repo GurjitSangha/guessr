@@ -16,6 +16,8 @@ export default function Home() {
   const [feedbackStyle, setFeedbackStyle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hintText, setHintText] = useState("");
+  const [hangman, setHangman] = useState("");
 
   const resetFeedback = () => {
     setFeedback("");
@@ -25,6 +27,8 @@ export default function Home() {
   const startNewGame = async () => {
     resetFeedback();
     setPostCount(0);
+    setHintText("");
+    setHangman("");
     setIsLoading(true);
     try {
       const { data } = await startGame();
@@ -32,6 +36,7 @@ export default function Home() {
       setGameId(data.id);
       setPosts(data.posts);
       setPostCount(4);
+      setHintText("The correct subreddit name has ${data.subLength} letters");
     } catch (err) {
       setIsLoading(false);
       displayFeedback({ data: err.response.data, error: true });
@@ -41,6 +46,7 @@ export default function Home() {
     // setGameId(dummy.id);
     // setPosts(dummy.posts);
     // setPostCount(4);
+    // setHintText(`The correct subreddit name has ${dummy.subLength} letters`);
   };
 
   const showMorePosts = () => {
@@ -69,8 +75,10 @@ export default function Home() {
     if (data.correct) {
       setFeedback("Correct!");
       setFeedbackStyle("bg-green-400 text-white border-green-500");
+      setHangman("");
+      setHintText("");
     } else if (data.similarity > 0.8) {
-      setFeedbackStyle("bg-yellow-400 text-white border-yellow-500");
+      setFeedbackStyle("bg-yellow-600 text-white border-yellow-500");
       setFeedback("Incorrect, but you are close!");
     } else {
       setFeedbackStyle("bg-red-400 text-white border-red-500");
@@ -84,9 +92,10 @@ export default function Home() {
     try {
       const { data } = await sendGuess({
         id: gameId,
-        guess: guess.toLowerCase(),
+        guess: guess.trim().toLowerCase(),
       });
       setIsSubmitting(false);
+      setHangman(`Hangman: ${data.hangman}`);
       displayFeedback({ data });
     } catch (err) {
       setIsSubmitting(false);
@@ -121,7 +130,7 @@ export default function Home() {
             className="bg-green-400 dark:bg-transparent border border-green-500 text-white p-3 rounded"
             onClick={startNewGame}
           >
-            New Game
+            {isLoading ? "Loading..." : "New Game"}
           </button>
 
           <div className="flex">
@@ -131,7 +140,7 @@ export default function Home() {
               id="guess"
               placeholder="Enter your guess here"
               onChange={(e) => setGuess(e.target.value)}
-              className="p-3 dark:bg-transparent flex-grow border-2 outline-none border-r-0 rounded-l border-gray-400 focus:border-gray-400"
+              className="p-3 dark:bg-transparent flex-grow dark:text-white border-2 outline-none border-r-0 rounded-l border-gray-400 focus:border-gray-400"
             />
             <input
               type="submit"
@@ -150,8 +159,16 @@ export default function Home() {
           />
         </div>
 
+        <div className="text-center text-gray-700 dark:text-gray-300">
+          {hintText}
+        </div>
+
+        <div className="text-center text-gray-700 dark:text-gray-300">
+          {hangman}
+        </div>
+
         <div
-          className={`${feedbackStyle} text-center mb-4 p-4 max-w-max mx-auto border-1 rounded`}
+          className={`${feedbackStyle} text-center mt-2 mb-4 p-4 max-w-max mx-auto border-1 rounded`}
         >
           {feedback}
         </div>

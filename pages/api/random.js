@@ -27,5 +27,5 @@ export default async (req, res) => {
       .json({ message: "Unable to load posts, please try again later" });
   }
 
-  res.status(200).json({ id, subreddit, posts });
+  res.status(200).json({ id, subreddit, subLength: subreddit.length, posts });
 };
