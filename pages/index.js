@@ -29,6 +29,7 @@ export default function Home() {
     setPostCount(0);
     setHintText("");
     setHangman("");
+    setGuess("");
     setIsLoading(true);
     try {
       const { data } = await startGame();
@@ -68,7 +69,9 @@ export default function Home() {
 
     if (giveUp) {
       setFeedbackStyle("bg-blue-400 text-white border-blue-500");
-      setFeedback(`Unlucky! The correct subreddit was /r/${data.subreddit}`);
+      setFeedback(
+        `Unlucky! <a href="https://reddit.com/r/${data.subreddit}" target="_blank">The correct subreddit was /r/${data.subreddit}</a>`
+      );
       return;
     }
 
