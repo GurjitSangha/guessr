@@ -18,14 +18,15 @@ export default async (req, res) => {
   }
 
   try {
-    connectRedis().set(id, subreddit.toLowerCase());
-    disconnectRedis();
+    await connectRedis().set(id, subreddit.toLowerCase());
   } catch (err) {
     console.log(err);
     res
       .status(500)
       .json({ message: "Unable to load posts, please try again later" });
+  } finally {
+    await disconnectRedis();
   }
 
-  res.status(200).json({ id, subreddit, subLength: subreddit.length, posts });
+  res.status(200).json({ id, subLength: subreddit.length, posts });
 };

@@ -1,6 +1,11 @@
 import Image from "next/image";
 
 export default function PostModal({ isOpen, close, post }) {
+  const canViewOriginal = (url) => {
+    const allowed = ["i.redd.it", "i.imgur.com"];
+    return allowed.some((allow) => url.includes(allow));
+  };
+
   return (
     <div>
       {isOpen && (
@@ -9,7 +14,18 @@ export default function PostModal({ isOpen, close, post }) {
             <div className="relative w-full max-w-xl my-6 mx-auto">
               <div className="border-0 rounded-lg shadow-lg bg-white dark:bg-gray-800 w-full flex flex-col">
                 <div className="flex items-start justify-between p-4 outline-none text-black dark:text-white">
-                  <h3 className="text-l">{post.title}</h3>
+                  <h3 className="text-l">
+                    {post.title}{" "}
+                    {canViewOriginal(post.url) && (
+                      <a
+                        className="text-blue-400"
+                        href={post.url}
+                        target="_blank"
+                      >
+                        (View original image)
+                      </a>
+                    )}
+                  </h3>
                   <button className="text-l outline-none pl-4" onClick={close}>
                     X
                   </button>

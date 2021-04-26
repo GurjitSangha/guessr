@@ -73,7 +73,9 @@ export default function Home() {
     }
 
     if (data.correct) {
-      setFeedback("Correct!");
+      setFeedback(
+        `Correct! <a href='https://reddit.com/r/${data.guess}' target='_blank'>Click here to go to /r/${data.guess}</a>`
+      );
       setFeedbackStyle("bg-green-400 text-white border-green-500");
       setHangman("");
       setHintText("");
@@ -95,8 +97,8 @@ export default function Home() {
         guess: guess.trim().toLowerCase(),
       });
       setIsSubmitting(false);
-      setHangman(`Hangman: ${data.hangman}`);
       displayFeedback({ data });
+      setHangman(`Hangman: ${data.hangman}`);
     } catch (err) {
       setIsSubmitting(false);
       displayFeedback({ data: err.response.data, error: true });
@@ -140,6 +142,11 @@ export default function Home() {
               id="guess"
               placeholder="Enter your guess here"
               onChange={(e) => setGuess(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key == "Enter") {
+                  handleSubmit();
+                }
+              }}
               className="p-3 dark:bg-transparent flex-grow dark:text-white border-2 outline-none border-r-0 rounded-l border-gray-400 focus:border-gray-400"
             />
             <input
@@ -169,9 +176,10 @@ export default function Home() {
 
         <div
           className={`${feedbackStyle} text-center mt-2 mb-4 p-4 max-w-max mx-auto border-1 rounded`}
-        >
-          {feedback}
-        </div>
+          dangerouslySetInnerHTML={{
+            __html: feedback,
+          }}
+        ></div>
 
         {isLoading ? (
           <div className="flex justify-center">
